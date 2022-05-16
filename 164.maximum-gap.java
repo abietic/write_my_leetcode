@@ -1,6 +1,8 @@
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /*
  * @lc app=leetcode id=164 lang=java
@@ -95,7 +97,11 @@ class Solution {
 
     public int maximumGap(int[] nums) {
         // 如果想要计算复杂度为O(n)，那么树，堆就不能用了，
-        // 可以试试栈，并查集，哈希表
+        // 可以试试栈，并查集，哈希表?
+        final int n = nums.length;
+        if (n < 2) {
+            return 0;
+        }
     }
 }
 // @lc code=end
