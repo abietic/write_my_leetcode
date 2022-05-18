@@ -14,6 +14,7 @@ import java.util.Map;
 
 // @lc code=start
 class Solution {
+    // 桶排不是符合要求的
     // public int longestConsecutive(int[] nums) {
     // final int base = (int) Math.pow(10, 9);
     // final int n = nums.length;
