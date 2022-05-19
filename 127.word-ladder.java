@@ -1,5 +1,7 @@
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -114,84 +116,88 @@ class Solution {
     // // return (distance[initState][endState] < n + 1) ?
     // // (distance[initState][endState] + 1) : 0;
     // }
-    public int ladderLength(String beginWord, String endWord, List<String>
-    wordList) {
-    Stack<String> stack = new Stack<>(), tmp = new Stack<>();
-    stack.push(beginWord);
-    Set<String> unvisited = new HashSet<>(wordList);
-    if (!unvisited.contains(endWord)) {
-    return 0;
-    }
-    unvisited.remove(beginWord);
-    int step = 1;
-    while (!stack.empty()) {
-    while (!stack.empty()) {
-    String cur = stack.pop();
-    if (cur.equals(endWord)) {
-    return step;
-    }
-    StringBuilder sb = new StringBuilder(cur);
-    for (int i = 0; i < cur.length(); ++i) {
-    char prev = sb.charAt(i);
-    for (char ch = 'a'; ch <= 'z'; ++ch) {
-    if (ch == prev) {
-    continue;
-    }
-    sb.setCharAt(i, ch);
-    String changedString = sb.toString();
-    if (unvisited.remove(changedString)) {
-    tmp.push(changedString);
-    }
-    }
-    sb.setCharAt(i, prev);
-    }
-    }
-    stack = tmp;
-    tmp = new Stack<>();
-    step++;
-    }
-    return 0;
-    }
-    // public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-    //     // 会超时，还没找到原因
-    //     Set<String> wordSet = new HashSet<>(wordList), aSideVisited = new HashSet<>(), anotherSideVisited = new HashSet<>(), tmpVisited = new HashSet<>(), tmp;
-    //     wordSet.remove(beginWord);
-    //     if (!wordSet.remove(endWord)) {
-    //         return 0;
-    //     }
-    //     aSideVisited.add(beginWord);
-    //     anotherSideVisited.add(endWord);
-    //     int step = 2;
-    //     while (!aSideVisited.isEmpty() && !anotherSideVisited.isEmpty()) {
-    //         if (aSideVisited.size() > anotherSideVisited.size()) {
-    //             tmp = aSideVisited;
-    //             aSideVisited = anotherSideVisited;
-    //             anotherSideVisited = tmp;
-    //         }
-    //         for (String cur : aSideVisited) {
-    //             StringBuilder sb = new StringBuilder(cur);
-    //             for (int i = 0; i < sb.length(); ++i) {
-    //                 char prev = sb.charAt(i);
-    //                 for (char ch = 'a'; ch <= 'z'; ++ch) {
-    //                     sb.setCharAt(i, ch);
-    //                     String changed = sb.toString();
-    //                     if (anotherSideVisited.contains(changed)) {
-    //                         return step;
-    //                     }
-    //                     if (wordList.remove(changed)) {
-    //                         tmpVisited.add(changed);
-    //                     }
-    //                 }
-    //                 sb.setCharAt(i, prev);
-    //             }
-    //         }
-    //         tmp = aSideVisited;
-    //         aSideVisited = tmpVisited;
-    //         tmpVisited = tmp;
-    //         tmpVisited.clear();
-    //         step++;
-    //     }
-    //     return 0;
+
+    // 由于单词长度最大为10，且单词仅包含26个小写字母，因此将字典存入hashset后每个单词的可及计算就是最大260
+    // 又由于单词的转换不应该出现重复，因此不同的搜索路径也不应该相交，因此使用广度优先搜索，就能找到转换的最短路径
+    // public int ladderLength(String beginWord, String endWord, List<String>
+    // wordList) {
+    // // 虽然是广度优先搜索但是因为要记录层数，所以使用两个栈来模拟每一步
+    // // 用一个单独的step记录步数
+    // int step = 1;
+    // Deque<String> unvisited = new ArrayDeque<>(), tmp = new ArrayDeque<>();
+    // // 当前字典中还没有被访问到的元素
+    // Set<String> canVisit = new HashSet<>(wordList);
+    // if (!canVisit.contains(endWord)) {
+    // return 0;
     // }
+    // unvisited.push(beginWord);
+    // canVisit.remove(beginWord);
+    // while (!unvisited.isEmpty()) {
+    // while (!unvisited.isEmpty()) {
+    // String cur = unvisited.pop();
+    // if (cur.equals(endWord)) {
+    // return step;
+    // }
+    // StringBuilder sb = new StringBuilder(cur);
+    // for (int i = 0; i < sb.length(); ++i) {
+    // char mem = sb.charAt(i);
+    // for (char c = 'a'; c <= 'z'; ++c) {
+    // sb.setCharAt(i, c);
+    // // 如果转换能到达未被访问的元素
+    // if (canVisit.remove(sb.toString())) {
+    // tmp.push(sb.toString());
+    // }
+    // }
+    // sb.setCharAt(i, mem);
+    // }
+    // }
+    // unvisited = tmp;
+    // tmp = new ArrayDeque<>();
+    // step++;
+    // }
+    // return 0;
+    // }
+
+    // 双向bfs加速
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Set<String> canVisit = new HashSet<>(wordList);
+        if (!canVisit.contains(endWord)) {
+            return 0;
+        }
+        Set<String> leftLine = new HashSet<>(), rightLine = new HashSet<>(), tmp = new HashSet<>();
+        leftLine.add(beginWord);
+        rightLine.add(endWord);
+        canVisit.remove(beginWord);
+        canVisit.remove(endWord);
+        int step = 2;
+        while (!leftLine.isEmpty() && !rightLine.isEmpty()) {
+            Set<String> curLine = leftLine.size() > rightLine.size() ? rightLine : leftLine;
+            Set<String> anotherLine = leftLine == curLine ? rightLine : leftLine;
+            for (String cur : curLine) {
+                StringBuilder sb = new StringBuilder(cur);
+                for (int i = 0; i < sb.length(); ++i) {
+                    char mem = sb.charAt(i);
+                    for (char ch = 'a'; ch <= 'z'; ++ch) {
+                        sb.setCharAt(i, ch);
+                        if (anotherLine.contains(sb.toString())) {
+                            return step;
+                        }
+                        if (canVisit.remove(sb.toString())) {
+                            tmp.add(sb.toString());
+                        }
+                    }
+                    sb.setCharAt(i, mem);
+                }
+            }
+            step++;
+            if (curLine == rightLine) {
+                rightLine = tmp;
+            } else {
+                leftLine = tmp;
+            }
+            tmp = new HashSet<>();
+        }
+        return 0;
+    }
 }
 // @lc code=end

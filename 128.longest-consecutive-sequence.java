@@ -108,6 +108,8 @@ class Solution {
     // }
     // return maxSeqLen;
     // }
+
+    // 最简单直接的方法
     public int longestConsecutive(int[] nums) {
         Set<Integer> numSet = new HashSet<>(nums.length);
         for (int n : nums) {
@@ -118,25 +120,17 @@ class Solution {
             if (!numSet.contains(n)) {
                 continue;
             }
-            numSet.remove(n);
-            int leftSpan = numSet.contains(n - 1) ? n - 1 : n;
-            int rightSpan = numSet.contains(n + 1) ? n + 1 : n;
-            while (numSet.contains(leftSpan)) {
-                numSet.remove(leftSpan);
-                if (!numSet.contains(leftSpan - 1)) {
-                    break;
-                } else {
-                    leftSpan--;
-                }
+            int leftSpan = n;
+            while (numSet.remove(leftSpan)) {
+                leftSpan--;
             }
-            while (numSet.contains(rightSpan)) {
-                 numSet.remove(rightSpan);
-                 if (!numSet.contains(rightSpan + 1)) {
-                     break;
-                 } else {
-                     rightSpan++;
-                 }
+            leftSpan++;
+            numSet.add(n);
+            int rightSpan = n;
+            while (numSet.remove(rightSpan)) {
+                rightSpan++;
             }
+            rightSpan--;
             int len = rightSpan - leftSpan + 1;
             maxSeqLen = Math.max(maxSeqLen, len);
         }

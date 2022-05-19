@@ -36,6 +36,7 @@ class Solution {
     // }
     
     // 从理念上应该和上面一样，但是从两个方向检查，不用多次遍历了
+    // 因为之前单向的时候另一侧的增长是最右逐个向左传递的
     public int candy(int[] ratings) {
         final int n = ratings.length;
         int[] candies = new int[n];
