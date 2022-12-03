@@ -109,28 +109,59 @@ class Solution {
     //     this.memo = new HashMap<>();
     //     return this._minDistance(word1, word2);
     // }
-    public int minDistance(String word1, String word2) {
-        final int w1l = word1.length(), w2l = word2.length();
-        final int[][] memo = new int[w1l + 1][w2l + 1];
+    // public int minDistance(String word1, String word2) {
+    //     final int w1l = word1.length(), w2l = word2.length();
+    //     final int[][] memo = new int[w1l + 1][w2l + 1];
         
-        // 初始化memo中已经可以推得的修改数
-        for (int i = 0; i <= w1l;++i) {
-            memo[i][0] = i;
+    //     // 初始化memo中已经可以推得的修改数
+    //     for (int i = 0; i <= w1l;++i) {
+    //         memo[i][0] = i;
+    //     }
+    //     for (int i = 0; i <= w2l; ++i) {
+    //         memo[0][i] = i;
+    //     }
+    //     // 代表剩余字符串长度的变量
+    //     for (int w1r = 1; w1r <= w1l; ++w1r) {
+    //         for (int w2r = 1; w2r <= w2l; ++w2r) {
+    //             if (word1.charAt(w1l - w1r) == word2.charAt(w2l - w2r)) {
+    //                 memo[w1r][w2r] = memo[w1r - 1][w2r - 1];
+    //             } else {
+    //                 memo[w1r][w2r] = Math.min(Math.min(memo[w1r - 1][w2r], memo[w1r][w2r - 1]), memo[w1r - 1][w2r - 1]) + 1;
+    //             }
+    //         }
+    //     }
+    //     return memo[w1l][w2l];
+    // }
+
+    public int minDistance(String word1, String word2) {
+        // f(word1Len, word2Len) = min{f(word1Len - 1, word2Len - 1) if 末尾相等, f(word1Len - 1, word2Len - 1) + 1 if replace, f(word1Len - 1, word2Len) + 1 if delete, f(word1Len, word2Len - 1) + 1 if insert}
+        // f(0, 0) = 0 f(0, x) = x f(x, 0) = x
+        final int MAX_EDIT = Math.max(word1.length(), word2.length());
+        if (word1.length() == 0 || word2.length() == 0) {
+            return MAX_EDIT;
         }
-        for (int i = 0; i <= w2l; ++i) {
-            memo[0][i] = i;
+        int[][] memo = new int[word1.length() + 1][word2.length() + 1];
+        for (int word1Len = 1; word1Len <= word1.length(); ++word1Len) {
+            memo[word1Len][0] = word1Len;
         }
-        // 代表剩余字符串长度的变量
-        for (int w1r = 1; w1r <= w1l; ++w1r) {
-            for (int w2r = 1; w2r <= w2l; ++w2r) {
-                if (word1.charAt(w1l - w1r) == word2.charAt(w2l - w2r)) {
-                    memo[w1r][w2r] = memo[w1r - 1][w2r - 1];
-                } else {
-                    memo[w1r][w2r] = Math.min(Math.min(memo[w1r - 1][w2r], memo[w1r][w2r - 1]), memo[w1r - 1][w2r - 1]) + 1;
+        for (int word2Len = 1; word2Len <= word2.length(); ++word2Len) {
+            memo[0][word2Len] = word2Len;
+        }
+        for (int word1Len = 1; word1Len <= word1.length(); ++word1Len) {
+            for (int word2Len = 1; word2Len <= word2.length(); ++word2Len) {
+                memo[word1Len][word2Len] = MAX_EDIT;
+                if (word1.charAt(word1Len - 1) == word2.charAt(word2Len - 1)) {
+                    memo[word1Len][word2Len] = memo[word1Len - 1][word2Len - 1];
                 }
+                // replace
+                memo[word1Len][word2Len] = Math.min(memo[word1Len][word2Len], memo[word1Len - 1][word2Len - 1] + 1);
+                // delete
+                memo[word1Len][word2Len] = Math.min(memo[word1Len][word2Len], memo[word1Len - 1][word2Len] + 1);
+                // insert
+                memo[word1Len][word2Len] = Math.min(memo[word1Len][word2Len], memo[word1Len][word2Len - 1] + 1);
             }
         }
-        return memo[w1l][w2l];
+        return memo[word1.length()][word2.length()];
     }
 }
 // @lc code=end

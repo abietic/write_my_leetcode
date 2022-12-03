@@ -10,49 +10,72 @@ import java.util.TreeMap;
 
 // @lc code=start
 class Solution {
+
+    // public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+    // if (k == 0) {
+    // return false;
+    // }
+    // // 复习一下,首先确定了检查子数组窗口, 要维护窗口大小滑动
+    // // 接下来,将窗口内的元素维护在一个红黑树中,如果元素的覆盖数值范围中能找到相应元素,认为找到相应内容
+    // TreeMap<Long, Integer> treeMap = new TreeMap<>(); // 元素值和对应的元素所在位置
+    // for (int i = 0; i < nums.length; ++i) {
+    // // 由于数组元素的取值范围,要用long来计算
+    // Long left, right;
+    // if ((left = treeMap.ceilingKey((long)nums[i] - t)) != null && (right =
+    // treeMap.floorKey((long)nums[i] + t)) != null && left <= right) {
+    // return true;
+    // }
+    // treeMap.put((long)nums[i], i);
+    // if (treeMap.size() > k) {
+    // treeMap.remove((long)nums[i - k]);
+    // }
+    // }
+    // return false;
+    // }
+
     public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
-        // // 找k+1范围内，元素差值绝对值在指定范围内的元素
-        // // 从数据范围来看应该可以支持O(nk)的复杂度，但是实时上超时了
-        // for (int i = 0; i < nums.length; ++i) {
-        // for (int len = 1; len <= k && i - len >= 0; ++len) {
-        // if (Math.abs((long)nums[i] - nums[i - len]) <= t) {
-        // return true;
-        // }
-        // }
-        // }
-        // return false;
+        // // // 找k+1范围内，元素差值绝对值在指定范围内的元素
+        // // // 从数据范围来看应该可以支持O(nk)的复杂度，但是实时上超时了
+        // // for (int i = 0; i < nums.length; ++i) {
+        // // for (int len = 1; len <= k && i - len >= 0; ++len) {
+        // // if (Math.abs((long)nums[i] - nums[i - len]) <= t) {
+        // // return true;
+        // // }
+        // // }
+        // // }
+        // // return false;
 
-        // // 转换思维，维护一个范围为k的子序列的最大和最小值
-        // // 通过检查序列的下一个邻接元素的检查范围t是否与最大值最小值组成的范围有相交判断
-        // // 通过二叉搜索树保证维护和搜索维持在klogk
-        // // 这个解法其实不用记录重复的数字出现次数，以为t一定大于等于0，如果在k范围中有相等元素了，一定已经满足条件返回真了
-        // TreeMap<Long, Integer> bst = new TreeMap<>();
-        // int len = 0;
-        // for (int i = 0; i < nums.length; ++i) {
-        //     if (len > k) {
-        //         if (bst.get((long)nums[i - k - 1]) == 1) {
-        //             bst.remove((long)nums[i - k - 1]);
-        //         } else {
-        //             bst.put((long)nums[i - k - 1], bst.get((long)nums[i - k - 1]) - 1);
-        //         }
-        //         len--;
-        //     }
-        //     if (!bst.isEmpty()) {
-        //         long ll = (long) nums[i] - t, lr = (long) nums[i] + t;
-        //         Long insiderLow = bst.ceilingKey(ll), insiderHigh = bst.floorKey(lr);
-        //         if ((insiderLow != null && insiderLow <= lr) || (insiderHigh != null && insiderHigh >= ll)) {
-        //             return true;
-        //         }
-        //     }
-        //     if (bst.containsKey((long)nums[i])) {
-        //         bst.put((long)nums[i], bst.get((long)nums[i]) + 1);
-        //     } else {
-        //         bst.put((long)nums[i], 1);
-        //     }
-        //     len++;
-        // }
-        // return false;
-
+        // // // 转换思维，维护一个范围为k的子序列的最大和最小值
+        // // // 通过检查序列的下一个邻接元素的检查范围t是否与最大值最小值组成的范围有相交判断
+        // // // 通过二叉搜索树保证维护和搜索维持在klogk
+        // // // 这个解法其实不用记录重复的数字出现次数，以为t一定大于等于0，如果在k范围中有相等元素了，一定已经满足条件返回真了
+        // // TreeMap<Long, Integer> bst = new TreeMap<>();
+        // // int len = 0;
+        // // for (int i = 0; i < nums.length; ++i) {
+        // // if (len > k) {
+        // // if (bst.get((long)nums[i - k - 1]) == 1) {
+        // // bst.remove((long)nums[i - k - 1]);
+        // // } else {
+        // // bst.put((long)nums[i - k - 1], bst.get((long)nums[i - k - 1]) - 1);
+        // // }
+        // // len--;
+        // // }
+        // // if (!bst.isEmpty()) {
+        // // long ll = (long) nums[i] - t, lr = (long) nums[i] + t;
+        // // Long insiderLow = bst.ceilingKey(ll), insiderHigh = bst.floorKey(lr);
+        // // if ((insiderLow != null && insiderLow <= lr) || (insiderHigh != null &&
+        // insiderHigh >= ll)) {
+        // // return true;
+        // // }
+        // // }
+        // // if (bst.containsKey((long)nums[i])) {
+        // // bst.put((long)nums[i], bst.get((long)nums[i]) + 1);
+        // // } else {
+        // // bst.put((long)nums[i], 1);
+        // // }
+        // // len++;
+        // // }
+        // // return false;
 
         // 还有用范围桶来存储一定范围内的数值的，每个范围桶的覆盖范围为t + 1
         // 这样就可以认为有可能满足数值大小范围的数字落在同一个桶中，或者可能在邻接的桶中
@@ -68,20 +91,23 @@ class Solution {
             // 这种问题在比较同号的元素时没有影响，但是在比较异号的元素时就会出现问题了
             // 因此，为了解决这个问题，需要将负数的取整方式也统一起来，就有了上面的方法
             // 值得注意的是，python在进行除法时，都是统一向小的方向取整，因此没有这样的问题
-            long idx = ((long)nums[i] + (long)Integer.MAX_VALUE + 1) / (1 + t);
+            long idx = ((long) nums[i] + (long) Integer.MAX_VALUE + 1) / (1 + t);
             if (len > k) {
-                long prevIdx = ((long)nums[i - k - 1] + (long)Integer.MAX_VALUE + 1) / (1 + t);
+                long prevIdx = ((long) nums[i - k - 1] + (long) Integer.MAX_VALUE + 1) / (1 +
+                        t);
                 buckets.remove(prevIdx);
                 --len;
             }
             if (buckets.containsKey(idx)) {
                 return true;
-            } else if (buckets.containsKey(idx - 1) && t >= Math.abs(buckets.get(idx - 1) - nums[i])) {
+            } else if (buckets.containsKey(idx - 1) && t >= Math.abs(buckets.get(idx - 1)
+                    - nums[i])) {
                 return true;
-            } else if (buckets.containsKey(idx + 1) && t >= Math.abs(buckets.get(idx + 1) - nums[i])) {
+            } else if (buckets.containsKey(idx + 1) && t >= Math.abs(buckets.get(idx + 1)
+                    - nums[i])) {
                 return true;
             }
-            buckets.put(idx, (long)nums[i]);
+            buckets.put(idx, (long) nums[i]);
             ++len;
         }
         return false;

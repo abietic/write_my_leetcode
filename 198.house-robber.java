@@ -23,15 +23,14 @@ class Solution {
     // }
 
     public int rob(int[] nums) {
-        // 是否可以使用贪心的思想解决这个问题呢？
-        // 假设从左往右窃取，已经截取了在位置x上的人家，接下来有两种选择
-        // 选择x+2或是选择x+3，因为如果选择更往后的人家，就会出现有的人家明明可以偷，却没偷，造成不必要的损失
-        // 如果选择了x+2，接下来可以选择的是x+4, x+5
-        // 如果选择了x+3，接下来可以选择的是x+5, x+6
-        int cur = -2, sum = 0;
-        for (; cur < nums.length;) {
-            
+        // 从上面的方法可以看出，其实不需要这么多备忘空间，只需要知道前两个的情况即可
+        int lenMinus1Max = nums[0], lenMinus2Max = 0, curLenMax = nums[0];
+        for (int len = 2; len <= nums.length; ++len) {
+            curLenMax = Math.max(lenMinus2Max + nums[len - 1], lenMinus1Max);
+            lenMinus2Max = lenMinus1Max;
+            lenMinus1Max = curLenMax;
         }
+        return curLenMax;
     }
 }
 // @lc code=end
